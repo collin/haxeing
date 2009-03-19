@@ -12,6 +12,7 @@ class FlashQuery {
   public function new(item) {
     this.items = [];
     if(item == null) this.items.push(FlashQuery.root);
+    else this.items.push(item);
   }
   
   public function each(fn) {
@@ -23,6 +24,25 @@ class FlashQuery {
     return this.each(function(item) {
       item.addChild(object);
     });
+  }
+  
+  public function bind(eventName:String, handler) { 
+    this.each(function(item) {
+      item.addEventListener(eventName, handler);
+    });
+    return this;
+  }
+  
+  public function click(handler) {
+    return this.bind('click', handler);
+  }
+  
+  public function mouseDown(handler) {
+    return this.bind('mouseDown', handler);
+  }
+  
+  public function mouseUp(handler) {
+    return this.bind('mouseUp', handler);
   }
 }
 
@@ -44,12 +64,12 @@ class Application {
     
     _().append(sp);
     
-    sp.addEventListener("mouseDown", function() {
-      sp.startDrag();
-    });
-    
-    sp.addEventListener("mouseUp", function() {
-      sp.stopDrag();
-    });
+    _(sp)
+      .mouseDown(function() {
+        sp.startDrag();
+      })
+      .mouseUp(function() {
+        sp.stopDrag();
+      });
   }
 }
