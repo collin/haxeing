@@ -23,17 +23,19 @@ class Node {
     if(!node.parentNode == null) node.parentNode.removeChild(node);
     node.parentNode = this;
     this.childNodes.push(node);
+    this.box.addChild(node.box);
     this.reflow();
-  }
-  
-  public function appendTo(node) {
-    node.append(this);
   }
   
   public function removeChild(node) {
     node.parentNode = null;
     this.childNodes = this.childrenWithout(node);
+    this.box.removeChild(node.box);
     this.reflow();
+  }
+  
+  public function appendTo(node) {
+    node.append(this);
   }
   
   public function siblings() {
