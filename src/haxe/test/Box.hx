@@ -88,23 +88,15 @@ class Padding extends FourSides {
   }
   
   override public function set top(value:Float)    {
-    _top = value;
-    return value;
   }
   
   override public function set left(value:Float)   {
-    _left = value;
-    return value;
   }
   
   override public function set bottom(value:Float) {
-    _bottom = value;
-    return value;
   }
   
   override public function set right(value:Float)  {
-    _right = value;
-    return value;
   }
 }
 
