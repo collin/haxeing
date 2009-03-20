@@ -19,11 +19,68 @@ class FourSides {
   dynamic var bottom : Float;
   dynamic var right  : Float;
 
-  public function new() {
+  dynamic var box    : Box;
+
+  public function new(box) {
     this.top    = 0;
     this.left   = 0;
     this.bottom = 0;
     this.right  = 0;
+    this.box    = box;
+  }
+}
+
+class Offset extends FourSides {
+  public function new(box) {
+    super(box);
+  }
+  
+  override public function set top(value:Float)    {
+  }
+  
+  override public function set left(value:Float)   {
+  }
+  
+  override public function set bottom(value:Float) {
+  }
+  
+  override public function set right(value:Float)  {
+  }
+}
+
+class Margin extends FourSides {
+  public function new(box) {
+    super(box);
+  }
+  
+  override public function set top(value:Float)    {
+  }
+  
+  override public function set left(value:Float)   {
+  }
+  
+  override public function set bottom(value:Float) {
+  }
+  
+  override public function set right(value:Float)  {
+  }
+}
+
+class Padding extends FourSides {
+  public function new(box) {
+    super(box);
+  }
+  
+  override public function set top(value:Float)    {
+  }
+  
+  override public function set left(value:Float)   {
+  }
+  
+  override public function set bottom(value:Float) {
+  }
+  
+  override public function set right(value:Float)  {
   }
 }
 
@@ -60,16 +117,15 @@ class Box extends DisplayObjectContainer {
   dynamic var padding : FourSides;  
   dynamic var border  : Border;
 
-
   public function new() {
     super();
-    this.display  = Display.BLOCK;
-    this.position = Position.STATIC;
+    this._display  = Display.BLOCK;
+    this._position = Position.STATIC;
     
-    this.offset  = new FourSides();
-    this.margin  = new FourSides();
-    this.padding = new FourSides();
-    this.border  = new Border();
+    this._offset  = new Offset(this);
+    this._margin  = new Margin(this);
+    this._padding = new Padding(this);
+    this._border  = new Border();
     
     this.width  = 0;
     this.height = 0;
