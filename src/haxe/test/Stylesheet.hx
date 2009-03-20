@@ -1,14 +1,25 @@
-import Array;
-
-class Rule {
-  public function new(selector, syles) {
+class Selector {
+  public function new() {
   
   }
 }
 
+class Rule {
+  public dynamic var styles : Array<Style>;
+  public var selector : String;
+  public function new(selector, styles) {
+    this.selector = selector;
+    this.styles = styles;
+  }
+}
+
 class Style {
-  public function new(property, value) {
+  public var property : String;
+  public var value    : String;
   
+  public function new(property, value) {
+    this.property = property;
+    this.value    = value;
   }
 }
 
@@ -29,32 +40,47 @@ class Parser {
   static var CHUNKER  = ~/[a-zA-Z.#>,: ]+\{[0-9a-z\-:; ]+\}/g;
   static var SELECTOR = ~/^[a-zA-Z.#>,: ]+/;
   static var RULES    = ~/\{([0-9a-z\-:; ]+)\}/;
-  static var RULE     = ~/;/;
-  static var PROPERTY = ~/:/;
+  static var RULE     = ~/;/g;
+  static var PROPERTY = ~/:/g;
   
   dynamic var css    : String;
   dynamic var chunks : Array<String>;
-  dynamic var styles : Array<Style>;
+  dynamic var rules : Array<Rule>;
 
   public function new(css) {
     this.css = css;
-    this.styles = [];
-    this.chunkCSS();  
-    this.chunks.map(function(chunk){
-      var selector = chunk.match(SELECTOR)[0];
-      var rules    = (chunk.match(RULES)[1] || "")
-        .split(RULE).map(function(rule) {
-          var split = rule.split(PROPERTY);
-          return new Rule(split[0], split[1]);
-        });
-      return new Style(selector, rules);
-    });
+    this.rules = [];
+    var styles = [];
+    this.chunkCSS();
+    var selector;
+    var _rules;
+    var splitRules;
+    var keyValue;
+    
+    // OMG SO SORRY
+    for(chunk in this.chunks) {
+      SELECTOR.match(chunk);
+      selector = SELECTOR.matched(1);
+      
+      if(selector != null) {
+        RULES.match(chunk);
+        _rules = RULES.matched(1);
+      
+        if(_rules != null) {
+          splitRules = RULE.split(_rules);
+      
+          for(rule in splitRules) {
+            keyValue = PROPERTY.split(rule);
+            styles.push(new Style(keyValue[0], keyValue[1]));
+          }
+        }
+        this.rules.push(new Rule(selector, styles));
+      }
+    }
   }
   
-  public function chunkCSS() {
-    var chunks = this.css.match(CHUNKER);
-    if(chunks) this.chunks = chunks;
-    else       this.chunks = [];
+  private function chunkCSS() {
+    this.chunks = CHUNKER.split(this.css);
   }
 }
 
