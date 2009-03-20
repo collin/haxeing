@@ -35,23 +35,23 @@ class Offset extends FourSides {
     super(box);
   }
   
-  override public function set top(value:Float)    {
-    _top = value;
+  public function setTop(value:Float)    {
+    this.top = value;
     return value;
   }
   
-  override public function set left(value:Float)   {
-    _left = value;
+  public function setLeft(value:Float)   {
+    this.left = value;
     return value;
   }
   
-  override public function set bottom(value:Float) {
-    _bottom = value;
+  public function setBottom(value:Float) {
+    this.bottom = value;
     return value;
   }
   
-  override public function set right(value:Float)  {
-    _right = value;
+  public function setRight(value:Float)  {
+    this.right = value;
     return value;
   }
 }
@@ -61,23 +61,23 @@ class Margin extends FourSides {
     super(box);
   }
   
-  override public function set top(value:Float)    {
-    _top = value;
+  public function setTop(value:Float)    {
+    this.top = value;
     return value;
   }
   
-  override public function set left(value:Float)   {
-    _left = value;
+  public function setLeft(value:Float)   {
+    this.left = value;
     return value;
   }
   
-  override public function set bottom(value:Float) {
-    _bottom = value;
+  public function setBottom(value:Float) {
+    this.bottom = value;
     return value;
   }
   
-  override public function set right(value:Float)  {
-    _right = value;
+  public function setRight(value:Float)  {
+    this.right = value;
     return value;
   }
 }
@@ -87,16 +87,24 @@ class Padding extends FourSides {
     super(box);
   }
   
-  override public function set top(value:Float)    {
+  public function setTop(value:Float)    {
+    this.top = value;
+    return value;
   }
   
-  override public function set left(value:Float)   {
+  public function setLeft(value:Float)   {
+    this.left = value;
+    return value;
   }
   
-  override public function set bottom(value:Float) {
+  public function setBottom(value:Float) {
+    this.bottom = value;
+    return value;
   }
   
-  override public function set right(value:Float)  {
+  public function setRight(value:Float)  {
+    this.right = value;
+    return value;
   }
 }
 
@@ -113,9 +121,13 @@ class Border {
   dynamic var bottomStyle : BorderStyle;
   dynamic var rightStyle  : BorderStyle;
   
-  public function new() {
-    this.width = new FourSides();
-    this.color = new FourSides();
+  dynamic var box : Box;
+  
+  public function new(box) {
+    this.width = new FourSides(box);
+    this.color = new FourSides(box);
+    
+    this.box = box;
     
     this.topStyle    = BorderStyle.SOLID;
     this.leftStyle   = BorderStyle.SOLID;
@@ -135,13 +147,13 @@ class Box extends DisplayObjectContainer {
 
   public function new() {
     super();
-    this._display  = Display.BLOCK;
-    this._position = Position.STATIC;
+    this.display  = Display.BLOCK;
+    this.position = Position.STATIC;
     
-    this._offset  = new Offset(this);
-    this._margin  = new Margin(this);
-    this._padding = new Padding(this);
-    this._border  = new Border();
+    this.offset  = new Offset(this);
+    this.margin  = new Margin(this);
+    this.padding = new Padding(this);
+    this.border  = new Border(this);
     
     this.width  = 0;
     this.height = 0;

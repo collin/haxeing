@@ -30,6 +30,8 @@ package css {
     const CHUNKER  = /[a-zA-Z.#>,: ]+\{[0-9a-z\-:; ]+\}/g;
     const SELECTOR = /^[a-zA-Z.#>,: ]+/;
     const RULES    = /\{([0-9a-z\-:; ]+)\}/;
+    const RULE     = /;/
+    const PROPERTY = /:/
     
     dynamic var css    : String;
     dynamic var chunks : Array<String>;
@@ -41,7 +43,8 @@ package css {
       this.chunkCSS();  
       this.chunks.forEach(function(chunk){
         var selector = chunk.match(SELECTOR)[0];
-        var rules    = chunk.match(RULES)[1];
+        var rules    = (chunk.match(RULES)[1] || "").split(RULE);
+        
       }, this);
     }
     
