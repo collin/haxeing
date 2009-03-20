@@ -1,10 +1,9 @@
 import flash.Lib;
-import flash.display.Sprite;
 import flash.display.MovieClip;
 import flash.display.Shape;
 import flash.events.MouseEvent;
 import FlashQuery;
-import Box;
+import Document;
 import haxe.Resource;
 
 

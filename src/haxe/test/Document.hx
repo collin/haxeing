@@ -1,51 +1,54 @@
 import Box;
+import Stylesheet;
+import flash.display.MovieClip;
 
 class Document {
-  dynamic var box;
+  dynamic var box : MovieClip;
 
-  public function new() {
-    this.box = flash.Lib.current();
+  public function new(box) {
+    this.box = box;
   }
 }
 
 class Node {
-  dynamic var box : Box;
-  dynamic var document   : Document;
-  dynamic var parentNode : Node;
-  dynamic var childNodes : Array<Node>;
+  dynamic public var box : Box;
+  dynamic public var document   : Document;
+  dynamic public var parentNode : Node;
+  dynamic public var childNodes : Array<Node>;
     
   public function new(document) {
+    this.childNodes = [];
     this.document = document;
-    this.box = Box.new();
+    this.box = new Box();
   }
   
-  public function append(node) {
-    if(!node.parentNode == null) node.parentNode.removeChild(node);
+  public function append(node:Node) {
+    if(node.parentNode != null) node.parentNode.removeChild(node);
     node.parentNode = this;
     this.childNodes.push(node);
     this.box.addChild(node.box);
     this.reflow();
   }
   
-  public function removeChild(node) {
+  public function removeChild(node:Node) {
     node.parentNode = null;
     this.childNodes = this.childrenWithout(node);
     this.box.removeChild(node.box);
     this.reflow();
   }
   
-  public function appendTo(node) {
+  public function appendTo(node:Node) {
     node.append(this);
   }
   
   public function siblings() {
-    return this.parentNode.childrenWithout(self);
+    return this.parentNode.childrenWithout(this);
   }
   
-  private function childrenWithout(node) {
-    return this.childNodes.filter(function(child) {
-      return child != node;
-    });
+  private function childrenWithout(node:Node) {
+    var without = [];
+    for(child in this.childNodes) if (child != node) without.push(child);
+    return without;
   }
 
   private function reflow() {
