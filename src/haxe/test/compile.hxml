@@ -1,3 +1,5 @@
 -swf test.swf
 -swf-version 9
 -main Application
+
+-resource document.xml

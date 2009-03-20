@@ -19,8 +19,12 @@ module HaxeHelper
   end
   
   def compile name
-    system "cd src/haxe/#{name} && haxe compile.hxml"
+    system "cd src/haxe/#{name} && haml document.haml > document.xml"
+    unless system "cd src/haxe/#{name} && haxe compile.hxml"
+      raise `cd src/haxe/#{name} && haxe compile.hxml`
+    end
     FileUtils.mv "src/haxe/#{name}/#{name}.swf", "site/swfs"
+    FileUtils.rm "src/haxe/#{name}/document.xml"
   end
   
   def hash_to_attrs hash
