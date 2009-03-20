@@ -1,42 +1,77 @@
+import flash.display.DisplayObjectContainer;
+
 enum Display {
-  block;
-  none;
-  inline;
+  BLOCK;
+  NONE;
+  INLINE;
 }
 
 enum Position {
-  relative;
-  absolute;
-  fixed;
+  RELATIVE;
+  ABSOLUTE;
+  FIXED;
+  STATIC;
 }
 
 class FourSides {
-  dynamic var top    : Float = 0;
-  dynamic var left   : Float = 0;
-  dynamic var bottom : Float = 0;
-  dynamic var right  : Float = 0;
+  dynamic var top    : Float;
+  dynamic var left   : Float;
+  dynamic var bottom : Float;
+  dynamic var right  : Float;
+
+  public function new() {
+    this.top    = 0;
+    this.left   = 0;
+    this.bottom = 0;
+    this.right  = 0;
+  }
 }
 
 enum BorderStyle {
-  solid;
+  SOLID;
 }
 
 class Border {
-  dynamic var width : FourSides = new FourSides();
-  dynamic var color : FourSides = new FourSides();
+  dynamic var width : FourSides;
+  dynamic var color : FourSides;
   
-  dynamic var topStyle    : BorderStyle = BorderStyle.solid;
-  dynamic var leftStyle   : BorderStyle = BorderStyle.solid;
-  dynamic var bottomStyle : BorderStyle = BorderStyle.solid;
-  dynamic var rightStyle  : BorderStyle = BorderStyle.solid;
+  dynamic var topStyle    : BorderStyle;
+  dynamic var leftStyle   : BorderStyle;
+  dynamic var bottomStyle : BorderStyle;
+  dynamic var rightStyle  : BorderStyle;
+  
+  public function new() {
+    this.width = new FourSides();
+    this.color = new FourSides();
+    
+    this.topStyle    = BorderStyle.SOLID;
+    this.leftStyle   = BorderStyle.SOLID;
+    this.bottomStyle = BorderStyle.SOLID;
+    this.rightStyle  = BorderStyle.SOLID;
+  }
 }
 
-class Box extends DisplayObjectContainer, impelements FourSides {
-  dynamic var display  : Display     = Display.none;
-  dynamic var position : Position    = Position.static;
+class Box extends DisplayObjectContainer {
+  dynamic var display  : Display;
+  dynamic var position : Position;
   
-  dynamic var margin  : FourSides = new FourSides();
-  dynamic var padding : FourSides = new FourSides();
-  
-  dynamic var border  : Border = new Border();
+  dynamic var offset  : FourSides;
+  dynamic var margin  : FourSides;
+  dynamic var padding : FourSides;  
+  dynamic var border  : Border;
+
+
+  public function new() {
+    super();
+    this.display  = Display.BLOCK;
+    this.position = Position.STATIC;
+    
+    this.offset  = new FourSides();
+    this.margin  = new FourSides();
+    this.padding = new FourSides();
+    this.border  = new Border();
+    
+    this.width  = 0;
+    this.height = 0;
+  }
 }
