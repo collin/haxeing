@@ -28,11 +28,12 @@ class Stylesheet {
   dynamic var styles : Array<Style>;
   
   public function new() {
-  
+    this.styles = [];
   }
   
   static function parse(css) {
     var parsed = new Parser(css);
+    this.styles.append(parsed.styles);
   }
 }
 
