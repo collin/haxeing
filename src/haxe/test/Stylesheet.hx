@@ -6,7 +6,7 @@ class Selector {
   private static var CHILD   = ~/^>/i;
   private static var ELEMENT = ~/^\.[a-z\-_]+/i;
   
-  private dynamic var chain : Array<Dynamic>;
+  private dynamic var chain : Array<SelectorPart>;
   
   public function new() {
     this.chain = [];
@@ -16,22 +16,30 @@ class Selector {
   
   }
   
-  protected function idSelector(match) {}
+  public function idSelector(match) {
+    this.chain.push(new IdSelector(match));
+  }
   
-  protected function classSelector(match) {}
+  public function classSelector(match) {
+    this.chain.push(new ClassSelector(match));
+  }
   
-  protected function childSelector(match) {}
+  public function childSelector() {
+    this.chain.push(new ChildSelector());
+  }
   
-  protected function elementSelector(id) {}
+  public function elementSelector(match) {
+    this.chain.push(new ElementSelector(match));
+  }
   
   private static function parse(string) {
-    string = Slector.trim(string);
+    string = Selector.trim(string);
     var selector = new Selector();
     for(chunk in string.split(" ")) {
-      if(ID.match(chunk))      selector.idSelector(ID);
-      if(CLASS.match(chunk))   selector.classSelector(CLASS);
+      if(ID.match(chunk))      selector.idSelector(ID.matched(1));
+      if(CLASS.match(chunk))   selector.classSelector(CLASS.matched(1));
       if(CHILD.match(chunk))   selector.childSelector();
-      if(ELEMENT.match(chunk)) selector.elementSelector();
+      if(ELEMENT.match(chunk)) selector.elementSelector(ELEMENT.matched(0));
     }
   }
   
@@ -42,10 +50,34 @@ class Selector {
   }
 }
 
-class IdSelector {}
-class ClassSelector {}
-class ElementSelector {}
-class ChildSelector {}
+interface SelectorPart {
+//  public function match(element:Xml) {}
+}
+
+class IdSelector implements SelectorPart {
+  dynamic var id : String;
+  public function new(id) {
+    this.id = id;
+  }
+}
+
+class ClassSelector implements SelectorPart {
+  dynamic var klass : String;
+  public function new(klass) {
+    this.klass = klass;
+  }
+}
+
+class ElementSelector implements SelectorPart {
+  dynamic var element : String;
+  public function new(element) {
+    this.element = element;
+  }
+}
+
+class ChildSelector implements SelectorPart {
+  public function new() {}
+}
 
 class Rule {
   public dynamic var styles : Array<Style>;
