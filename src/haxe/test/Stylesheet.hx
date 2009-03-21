@@ -1,10 +1,51 @@
 import haxe.Resource;
 
 class Selector {
+  private static var ID      = ~/^#([A-Za-z\-_0-9]+)/;
+  private static var CLASS   = ~/^\.([a-z\-_]+)/i;
+  private static var CHILD   = ~/^>/i;
+  private static var ELEMENT = ~/^\.[a-z\-_]+/i;
+  
+  private dynamic var chain : Array<Dynamic>;
+  
   public function new() {
+    this.chain = [];
+  }
+  
+  public function create(string) {
   
   }
+  
+  protected function idSelector(match) {}
+  
+  protected function classSelector(match) {}
+  
+  protected function childSelector(match) {}
+  
+  protected function elementSelector(id) {}
+  
+  private static function parse(string) {
+    string = Slector.trim(string);
+    var selector = new Selector();
+    for(chunk in string.split(" ")) {
+      if(ID.match(chunk))      selector.idSelector(ID);
+      if(CLASS.match(chunk))   selector.classSelector(CLASS);
+      if(CHILD.match(chunk))   selector.childSelector();
+      if(ELEMENT.match(chunk)) selector.elementSelector();
+    }
+  }
+  
+  private static function trim(string) {
+    string = ~/^[ ]+/.replace(string, "");
+    string = ~/[ ]+$/.replace(string, "");
+    return string;
+  }
 }
+
+class IdSelector {}
+class ClassSelector {}
+class ElementSelector {}
+class ChildSelector {}
 
 class Rule {
   public dynamic var styles : Array<Style>;
