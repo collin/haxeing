@@ -1,4 +1,4 @@
-import flash.display.DisplayObjectContainer;
+import flash.display.Sprite;
 
 enum Display {
   BLOCK;
@@ -136,7 +136,7 @@ class Border {
   }
 }
 
-class Box extends DisplayObjectContainer {
+class Box extends Sprite {
   dynamic var display  : Display;
   dynamic var position : Position;
   
@@ -147,6 +147,7 @@ class Box extends DisplayObjectContainer {
 
   public function new() {
     super();
+
     this.display  = Display.BLOCK;
     this.position = Position.STATIC;
     
@@ -156,6 +157,6 @@ class Box extends DisplayObjectContainer {
     this.border  = new Border(this);
     
     this.width  = 0;
-    this.height = 0;
-  }
+    this.height = 0;  
+  } 
 }

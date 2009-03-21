@@ -2,3 +2,4 @@
 -swf-version 9
 -swf test.swf
 -resource document.xml
+-resource stylesheet.css

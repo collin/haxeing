@@ -7,34 +7,44 @@ import FlashQuery;
 import Document;
 import haxe.Resource;
 
-
 class Application {
   static function _(query=null) {
     return new FlashQuery(query);
   }
 
 
-  static function main() {
-    var sp = new Sprite();
-    var g = sp.graphics;
-
-    var x = Xml.parse(Resource.getString("document.xml")).firstElement();
+  static function main() {    
+    var doc = Document.fromResource(flash.Lib.current, "document.xml");
+    trace("\n"+Resource.getString("stylesheet.css"));
+    doc.stylesheet.parseResource("stylesheet.css");
+    trace('loaded stylsheet');
+    for(rule in doc.stylesheet.rules) {
+      trace(rule.selector);
+    }
     
-    g.beginFill(0xFF0000);
-    g.moveTo(0, 0);
-    g.lineTo(50,0);
-    g.lineTo(50,50);
-    g.lineTo(0,50);
-    g.endFill();
+/*    var g = flash.Lib.current.getChildAt(1).graphics;*/
+/*    var sp = doc.childNodes[0];      */
+/*    var g = sp.box.graphics;*/
+      
+/*    var sp = new Sprite();*/
+/*    var g = sp.graphics;*/
+/*    g.beginFill(0xFF0000);*/
+/*    g.moveTo(0, 0);*/
+/*    g.lineTo(50,0);*/
+/*    g.lineTo(50,50);*/
+/*    g.lineTo(0,50);*/
+/*    g.endFill();*/
+/*    trace("what");*/
     
-    _().append(sp);
-    
-    _(sp)
-      .mouseDown(function() {
-        sp.startDrag();
-      })
-      .mouseUp(function() {
-        sp.stopDrag();
-      });
+/*    flash.Lib.current.addChild(sp.box);    */
+/*    _().append(sp.box);*/
+/*    */
+/*    _(sp)*/
+/*      .mouseDown(function() {*/
+/*        sp.startDrag();*/
+/*      })*/
+/*      .mouseUp(function() {*/
+/*        sp.stopDrag();*/
+/*      });*/
   }
 }
