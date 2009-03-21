@@ -1,3 +1,4 @@
--swf test.swf
 -main Application
+-swf-version 9
+-swf test.swf
 -resource document.xml

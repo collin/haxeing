@@ -1,4 +1,5 @@
 import flash.Lib;
+import flash.display.Sprite;
 import flash.display.MovieClip;
 import flash.display.Shape;
 import flash.events.MouseEvent;

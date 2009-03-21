@@ -25,15 +25,15 @@ class Style {
 
 class Stylesheet {
   
-  dynamic var styles : Array<Style>;
+  public dynamic var rules : Array<Rule>;
   
   public function new() {
-    this.styles = [];
+    this.rules = [];
   }
   
-  static function parse(css) {
+  public function parse(css) {
     var parsed = new Parser(css);
-    this.styles.append(parsed.styles);
+    this.rules.concat(parsed.rules);
   }
 }
 
@@ -46,7 +46,7 @@ class Parser {
   
   dynamic var css    : String;
   dynamic var chunks : Array<String>;
-  dynamic var rules : Array<Rule>;
+  public dynamic var rules : Array<Rule>;
 
   public function new(css) {
     this.css = css;

@@ -2,21 +2,43 @@ import Box;
 import Stylesheet;
 import flash.display.MovieClip;
 
-class Document {
+class AbstractNode {
+  dynamic public var childNodes : Array<AbstractNode>;
+}
+
+class Document extends AbstractNode {
   dynamic var box : MovieClip;
+  dynamic public var stylesheet : Stylesheet;
 
   public function new(box) {
+    this.stylesheet = new Stylesheet();
     this.box = box;
+  }
+  
+  public static function fromXml(box, xml:Xml) {
+    var document = new Document(box);
+
+    for(child in xml.elements()) 
+      document.childNodes.push(Node.fromXml(document, child));
+    return document;
   }
 }
 
-class Node {
+class Node extends AbstractNode {
   dynamic public var box : Box;
   dynamic public var document   : Document;
   dynamic public var parentNode : Node;
-  dynamic public var childNodes : Array<Node>;
+  public var tagName : String;
     
-  public function new(document) {
+  public static function fromXml(document, xmlNode:Xml) {
+    var node = new Node(document, xmlNode.nodeName);
+    for(child in xmlNode.elements())
+      node.childNodes.push(Node.fromXml(document, child));
+      
+    return node;
+  }
+    
+  public function new(document, tagName) {
     this.childNodes = [];
     this.document = document;
     this.box = new Box();
