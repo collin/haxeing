@@ -6,6 +6,10 @@ import haxe.Resource;
 class AbstractNode {
   dynamic public var childNodes : Array<AbstractNode>;
   dynamic public var box : Sprite;
+  public var tagName       : String;  
+  dynamic public var id    : String;
+  dynamic public var klass : String;
+  
   
   public function append(node:Node) {
     node.remove();
@@ -29,6 +33,9 @@ class AbstractNode {
   }
 
   public function new() {
+    this.tagName = "";
+    this.id      = "";
+    this.klass   = "";
     this.childNodes = [];
   }
 
@@ -44,6 +51,7 @@ class Document extends AbstractNode {
     super();
     this.stylesheet = new Stylesheet();
     this.box = box;
+    this.tagName = "";
   }
   
   public static function fromResource(box, resourceName) {
@@ -66,7 +74,6 @@ class Document extends AbstractNode {
 class Node extends AbstractNode {
   dynamic public var document   : Document;
   dynamic public var parentNode : AbstractNode;
-  public var tagName : String;
     
   public static function fromXml(document, xmlNode:Xml) {
     var node = new Node(document, xmlNode.nodeName);
@@ -78,6 +85,7 @@ class Node extends AbstractNode {
     super();
     this.document = document;
     this.box = new Box();
+    this.tagName = "";
   }
 
   public function remove() {

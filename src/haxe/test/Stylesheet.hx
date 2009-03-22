@@ -5,7 +5,7 @@ class Selector {
   private static var ID      = ~/^#([A-Za-z\-_0-9]+)/;
   private static var CLASS   = ~/^\.([a-z\-_]+)/i;
   private static var CHILD   = ~/^>/i;
-  private static var ELEMENT = ~/^\.[a-z\-_]+/i;
+  private static var ELEMENT = ~/^[a-z\-_]+/i;
   
   private dynamic var chain : Array<SelectorPart>;
   
@@ -30,14 +30,16 @@ class Selector {
   }
 
   public function matchDocument(doc : Document) {
-  
+    return this.chain[0].matchDocument(doc);
   }
-  
+
+//FIXME only checks single-node selectors  
   public function matchNode(node : Node) {
-  
+    if(this.chain[0].matchNode(node)) return false;    
+    return true;
   }
   
-  private static function create(string) {
+  public static function create(string) {
     string = Selector.trim(string);
     var selector = new Selector();
     for(chunk in string.split(" ")) {
@@ -46,7 +48,7 @@ class Selector {
       if(CHILD.match(chunk))   selector.childSelector();
       if(ELEMENT.match(chunk)) selector.elementSelector(ELEMENT.matched(0));
     }
-    return selector
+    return selector;
   }
   
   private static function trim(string) {
@@ -57,13 +59,27 @@ class Selector {
 }
 
 interface SelectorPart {
-//  public function match(element:Xml) {}
+  public function matchNode(node:AbstractNode):Bool {}
+  public function matchDocument(document:AbstractNode):Array<AbstractNode> {}
 }
 
 class IdSelector implements SelectorPart {
   dynamic var id : String;
   public function new(id) {
     this.id = id;
+  }
+  
+  public function matchNode(node:AbstractNode) {
+    return node.id == this.id;
+  }
+  
+  public function matchDocument(document:AbstractNode) {
+    var matched = [];
+    for(element in document.childNodes) {
+      if(this.matchNode(element)) matched.push(element);
+      matched.concat(this.matchDocument(element));
+    }
+    return matched;
   }
 }
 
@@ -72,17 +88,51 @@ class ClassSelector implements SelectorPart {
   public function new(klass) {
     this.klass = klass;
   }
+  
+  public function matchNode(node:AbstractNode) {
+    return node.klass == this.klass;
+  }
+  
+  public function matchDocument(document:AbstractNode) {
+    var matched = [];
+    for(element in document.childNodes) {
+      if(this.matchNode(element)) matched.push(element);
+      matched.concat(this.matchDocument(element));
+    }
+    return matched;
+  }  
 }
 
 class ElementSelector implements SelectorPart {
-  dynamic var element : String;
-  public function new(element) {
-    this.element = element;
+  dynamic var tagName : String;
+  public function new(tagName) {
+    this.tagName = tagName;
   }
+  
+  public function matchNode(node:AbstractNode) {
+    return node.tagName == this.tagName;
+  }
+  
+  public function matchDocument(document:AbstractNode) {
+    var matched = [];
+    for(element in document.childNodes) {
+      if(this.matchNode(element)) matched.push(element);
+      matched.concat(this.matchDocument(element));
+    }
+    return matched;
+  }  
 }
 
 class ChildSelector implements SelectorPart {
   public function new() {}
+  
+  public function matchNode(node:AbstractNode) {
+    return false;
+  }
+  
+  public function matchDocument(document:AbstractNode) {
+    return [];
+  }
 }
 
 class Rule {
@@ -114,6 +164,132 @@ class Style {
   }
 }
 
+class WidthStyle   {
+  public function new(width) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class HeightStyle  {
+  public function new(height) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class BorderStyle  {
+  public function new(border) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class MarginStyle  {
+  public function new(margin) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class PaddingStyle {
+  public function new(padding) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class BackgroundColorStyle {
+  public function new(color) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class BackgroundImageStyle {
+  public function new(image) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class PositionStyle {
+  public function new(image) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class DisplayStyle {
+  public function new(image) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class TopStyle {
+  public function new(image) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class RightStyle {
+  public function new(image) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class BottomStyle {
+  public function new(image) {
+  
+  }
+  
+  public function applyStyle(node:AbstractNode) {
+  
+  }
+}
+
+class LeftStyle {
+  public function new(image) {
+  
+  }
+}
+
 class Stylesheet {
   
   public dynamic var rules : Array<Rule>;
@@ -129,7 +305,7 @@ class Stylesheet {
   
   public function parse(css) {
     var parsed = new Parser(css);
-    this.rules.concat(parsed.rules);
+    this.rules = this.rules.concat(parsed.rules);
   }
   
   public function parseResource(resourceName) {
@@ -169,8 +345,11 @@ class Parser {
           splitRules = RULE.split(_rules);
       
           for(rule in splitRules) {
-            keyValue = PROPERTY.split(rule);
-            styles.push(new Style(keyValue[0], keyValue[1]));
+
+            if(!(~/^[ ]+$/).match(rule)) {
+              keyValue = PROPERTY.split(rule);
+              styles.push(new Style(keyValue[0], keyValue[1]));
+            }
           }
         }
         this.rules.push(new Rule(selector, styles));

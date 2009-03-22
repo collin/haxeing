@@ -18,8 +18,12 @@ class Application {
     trace("\n"+Resource.getString("stylesheet.css"));
     doc.stylesheet.parseResource("stylesheet.css");
     trace('loaded stylsheet');
+    trace(doc.stylesheet.rules);
     for(rule in doc.stylesheet.rules) {
       trace(rule.selector);
+      for(style in rule.styles) {
+        style.inspect();
+      }
     }
     
 /*    var g = flash.Lib.current.getChildAt(1).graphics;*/
