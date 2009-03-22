@@ -1,4 +1,5 @@
 import haxe.Resource;
+import Document;
 
 class Selector {
   private static var ID      = ~/^#([A-Za-z\-_0-9]+)/;
@@ -10,10 +11,6 @@ class Selector {
   
   public function new() {
     this.chain = [];
-  }
-  
-  public function create(string) {
-  
   }
   
   public function idSelector(match) {
@@ -31,8 +28,16 @@ class Selector {
   public function elementSelector(match) {
     this.chain.push(new ElementSelector(match));
   }
+
+  public function matchDocument(doc : Document) {
   
-  private static function parse(string) {
+  }
+  
+  public function matchNode(node : Node) {
+  
+  }
+  
+  private static function create(string) {
     string = Selector.trim(string);
     var selector = new Selector();
     for(chunk in string.split(" ")) {
@@ -41,6 +46,7 @@ class Selector {
       if(CHILD.match(chunk))   selector.childSelector();
       if(ELEMENT.match(chunk)) selector.elementSelector(ELEMENT.matched(0));
     }
+    return selector
   }
   
   private static function trim(string) {
@@ -81,9 +87,9 @@ class ChildSelector implements SelectorPart {
 
 class Rule {
   public dynamic var styles : Array<Style>;
-  public var selector : String;
+  public var selector : Selector;
   public function new(selector, styles) {
-    this.selector = selector;
+    this.selector = Selector.create(selector);
     this.styles   = styles;
   }
 }
