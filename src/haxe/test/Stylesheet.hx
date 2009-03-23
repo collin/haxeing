@@ -145,23 +145,125 @@ class Rule {
   }
 }
 
-class Style {
+class Value {
   static var PERCENT = ~/([\d]+)%/;
   static var PIXELS  = ~/([\d]+)px/;
+  static var COLOR   = ~/#([\d]{6})/;
+  static var FOURSIDES = ~/([\d])px ([\d])px ([\d])px ([\d])px/
 
-  public var property : String;
-  public var value    : Value;
+  dynamic public var pixels  : Float;
+  dynamic public var percent : Float;
   
-  public function new(property, value) {
-    this.property = this.trim(property);
-    this.value    = this.trim(value);
+  dynamic public var position : Position;
+  dynamic public var display  : Display;  
+  
+  dynamic public var topWidth    : Float;
+  dynamic public var rightWidth  : Float;
+  dynamic public var bottomWidth : Float;
+  dynamic public var leftWidth   : Float;
+  
+  dynamic public var topColor    : Integer;
+  dynamic public var rightColor  : Integer;
+  dynamic public var bottomColor : Integer;
+  dynamic public var leftColor   : Integer;
+  
+  dynamic public var color : Integer;
+  
+  dynamic public var top    : Float;
+  dynamic public var right  : Float;
+  dynamic public var bottom : Float;
+  dynamic public var left   : Float;
+    
+  public static function parseMeasure(measure:String) {
+    var value = new Value();
+    
+    if(Value.PERCENT.match(measure)) 
+      value.percent = parseFloat(Value.PERCENT.matched(1));
+      
+    if(Value.PIXELS.match(measure))  
+      value.pixels = Value.PIXELS.matched(1);
+      
+    return value;
+  }
+  
+  public static function parseColor(color:String) {
+    var value = new Value();
+    if(Value.COLOR.match(color)) 
+      value.color = parseInt(Value.COLOR.matched(1));
+    return value;
+  }
+  
+  public static function parseFourSides(sides:String) {
+    var value = new Value();
+    if(Value.FOURSIDES.match(sides)) {
+      value.top    = Value.FOURSIDES.matched(1);
+      value.right  = Value.FOURSIDES.matched(2);
+      value.bottom = Value.FOURSIDES.matched(3);
+      value.left   = Value.FOURSIDES.matched(4);
+    }
+    return value;
+  }
+  
+  public static function parsePosition(position:String) {
+    var value = new Value();
+    switch(value) {
+      case "static":   value.position = Position.STATIC;
+      case "fixed":    value.position = Position.FIXED;
+      case "relative": value.position = Position.RELATIVE;
+      case "absolute": value.position = Position.ABSOLUTE;
+    }
+    return value;
+  }
+  
+  public static function parseDisplay(display:String) {
+    var value = new Value();
+    switch(value) {
+      case "none":   value.position = Display.NONE;
+      case "block":  value.position = Display.BLOCK;
+      case "inline": value.position = Display.INLINE;
+    }
+    return value;
+  }
+  
+  public static function parseUrl(url:String) {
+    var value = new Value();
+    return value;
+  }
+}
+
+class Style {
+  public var value    : Value;
+
+  public function create(property:String, value:String) {
+    this.property = Style.trim(property);
+    value    = Style.trim(value);
+    
+    var klass;
+    
+    switch(this.property) {
+      case "width":             klass = WidthStyle;
+      case "height":            klass = HeightStyle;
+      case "border":            klass = BorderStyle;
+      case "margin":            klass = MarginStyle;
+      case "padding":           klass = PaddingStyle;
+      case "background-color":  klass = BackgroundColorStyle;
+      case "background-image":  klass = BackgroundImageStyle;
+      case "position":          klass = PositionStyle;
+      case "display":           klass = DisplayStyle;
+      case "top":               klass = TopStyle;
+      case "right":             klass = RightStyle;
+      case "bottom":            klass = BottomStyle;
+      case "left":              klass = LeftStyle;
+    }
+    
+    return new klass(value);
   }
 
   public function inspect() {
     trace("["+this.property+"|"+this.value+"]");
   }
 
-  public function trim(string) {
+  public static function trim(string) {
     string = ~/^[ ]+/.replace(string, "");
     string = ~/[ ]+$/.replace(string, "");
     return string;
