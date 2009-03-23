@@ -10,6 +10,8 @@ class AbstractNode {
   dynamic public var id    : String;
   dynamic public var klass : String;
   
+  dynamic public var styles : List<Style>;
+  
   
   public function append(node:Node) {
     node.remove();

@@ -123,6 +123,7 @@ class ElementSelector implements SelectorPart {
   }  
 }
 
+
 class ChildSelector implements SelectorPart {
   public function new() {}
   
@@ -145,8 +146,11 @@ class Rule {
 }
 
 class Style {
+  static var PERCENT = ~/([\d]+)%/;
+  static var PIXELS  = ~/([\d]+)px/;
+
   public var property : String;
-  public var value    : String;
+  public var value    : Value;
   
   public function new(property, value) {
     this.property = this.trim(property);
@@ -164,129 +168,157 @@ class Style {
   }
 }
 
-class WidthStyle   {
-  public function new(width) {
-  
+class WidthStyle extends Style {
+  public function new(width:String) {
+    this.value = Value.parseMeasure(width);
   }
   
   public function applyStyle(node:AbstractNode) {
-  
+    if(this.value.percent)
+      node.width = this.value.percent * node.parentNode.width;
+    else
+      node.width = this.value.pixels;    
   }
 }
 
-class HeightStyle  {
-  public function new(height) {
-  
+class HeightStyle extends Style {
+  public function new(height:String) {
+    this.value = Value.parseMeasure(height);
   }
   
-  public function applyStyle(node:AbstractNode) {
-  
-  }
-}
-
-class BorderStyle  {
-  public function new(border) {
-  
-  }
-  
-  public function applyStyle(node:AbstractNode) {
-  
+  public function applyStyle(box:Box) {
+    if(this.value.percent)
+      box.height = this.value.percent * box.parentNode.height;
+    else
+      box.height = this.value.pixels;    
   }
 }
 
-class MarginStyle  {
-  public function new(margin) {
-  
+class BorderStyle extends Style {
+  public function new(border:String) {
+    this.value = Value.parseBorderStyle(border);
   }
   
-  public function applyStyle(node:AbstractNode) {
-  
-  }
-}
-
-class PaddingStyle {
-  public function new(padding) {
-  
-  }
-  
-  public function applyStyle(node:AbstractNode) {
-  
-  }
-}
-
-class BackgroundColorStyle {
-  public function new(color) {
-  
-  }
-  
-  public function applyStyle(node:AbstractNode) {
-  
+  public function applyStyle(box:Box) {
+    var bbw = box.border.width;
+    bbw.top    = this.value.topWidth;
+    bbw.right  = this.value.rightWidth;
+    bbw.bottom = this.value.bottomWidth;
+    bbw.left   = this.value.leftWidth;
+    
+    var bbc = box.border.color;
+    bbc.top    = this.value.topColor;
+    bbc.right  = this.value.rightColor;
+    bbc.bottom = this.value.bottomWidth;
+    bbc.left   = this.value.leftWidth;
   }
 }
 
-class BackgroundImageStyle {
-  public function new(image) {
-  
+class MarginStyle extends Style {
+  public function new(margin:String) {
+    this.value = Value.parseFourSides(margin);
   }
   
-  public function applyStyle(node:AbstractNode) {
-  
-  }
-}
-
-class PositionStyle {
-  public function new(image) {
-  
-  }
-  
-  public function applyStyle(node:AbstractNode) {
-  
+  public function applyStyle(box:Box) {
+    var bm = box.margin;
+    bm.top    = this.value.top;
+    bm.right  = this.value.right;
+    bm.bottom = this.value.bottom;
+    bm.left   = this.value.left;
   }
 }
 
-class DisplayStyle {
-  public function new(image) {
-  
+class PaddingStyle extends Style {
+  public function new(padding:String) {
+    this.value = Value.parseFourSides(margin);
   }
   
-  public function applyStyle(node:AbstractNode) {
-  
-  }
-}
-
-class TopStyle {
-  public function new(image) {
-  
-  }
-  
-  public function applyStyle(node:AbstractNode) {
-  
+  public function applyStyle(box:Box) {
+    var bm = box.margin;
+    bm.top    = this.value.top;
+    bm.right  = this.value.right;
+    bm.bottom = this.value.bottom;
+    bm.left   = this.value.left;
   }
 }
 
-class RightStyle {
-  public function new(image) {
-  
+class BackgroundColorStyle extends Style {
+  public function new(color:String) {
+    this.value = Value.parseColor(color);
   }
   
-  public function applyStyle(node:AbstractNode) {
-  
-  }
-}
-
-class BottomStyle {
-  public function new(image) {
-  
-  }
-  
-  public function applyStyle(node:AbstractNode) {
-  
+  public function applyStyle(box:Box) {
+    box.opaqueBackground = this.value.color;
   }
 }
 
-class LeftStyle {
-  public function new(image) {
+class BackgroundImageStyle extends Style {
+  public function new(image:String) {
+    this.value = Value.parseUrl(image);
+  }
   
+  public function applyStyle(box:Box) {
+    trace("BackgroundImage Unimplemented :(");
+  }
+}
+
+class PositionStyle extends Style {
+  public function new(position:String) {
+    this.value = Value.parsePosition(position);  
+  }
+  
+  public function applyStyle(box:Box) {
+    box.position = this.value.position;
+  }
+}
+
+class DisplayStyle extends Style {
+  public function new(display:String) {
+    this.value = value.parseDisplay(display);
+  }
+  
+  public function applyStyle(box:Box) {
+    box.display = this.value.display();
+  }
+}
+
+class TopStyle extends Style {
+  public function new(top:String) {
+    this.value = Value.parseMeasure(top);
+  }
+  
+  public function applyStyle(box:Box) {
+    box.offset.top = this.value.pixels;
+  }
+}
+
+class RightStyle extends Style {
+  public function new(right:String) {
+    this.value = Value.parseMeasure(right);
+  }
+  
+  public function applyStyle(box:Box) {
+    box.offset.right = value.pixels;
+  }
+}
+
+class BottomStyle extends Style {
+  public function new(bottom:String) {
+    this.value = Value.parseMeasure(bottom);
+  }
+  
+  public function applyStyle(box:Box) {
+    box.offset.bottom = value.pixels;
+  }
+}
+
+class LeftStyle extends Style {
+  public function new(left:String) {
+    this.value = Value.parseMeasure(left);
+  }
+  
+  public function applyStyle(box:Box) {
+    box.offset.left = value.pixels;
   }
 }
 

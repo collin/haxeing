@@ -21,12 +21,12 @@ module HaxeHelper
   def compile name
     system "cd src/haxe/#{name} && haml document.haml > document.xml"
     system "cd src/haxe/#{name} && sass stylesheet.sass > stylesheet.css"
-    unless system "cd src/haxe/#{name} && haxe compile.hxml"
-      raise `cd src/haxe/#{name} && haxe compile.hxml -swf-version 9`
-    end
+    system "cd src/haxe/#{name} && haxe compile.hxml"
     FileUtils.mv "src/haxe/#{name}/#{name}.swf", "site/swfs"
     FileUtils.rm "src/haxe/#{name}/document.xml"
     FileUtils.rm "src/haxe/#{name}/stylesheet.css"
+    Kernel.puts
+    Kernel.puts
   end
   
   def hash_to_attrs hash

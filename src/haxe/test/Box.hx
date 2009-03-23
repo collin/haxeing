@@ -108,7 +108,7 @@ class Padding extends FourSides {
   }
 }
 
-enum BorderStyle {
+enum BorderStyles {
   SOLID;
 }
 
@@ -116,10 +116,10 @@ class Border {
   dynamic var width : FourSides;
   dynamic var color : FourSides;
   
-  dynamic var topStyle    : BorderStyle;
-  dynamic var leftStyle   : BorderStyle;
-  dynamic var bottomStyle : BorderStyle;
-  dynamic var rightStyle  : BorderStyle;
+  dynamic var topStyle    : BorderStyles;
+  dynamic var leftStyle   : BorderStyles;
+  dynamic var bottomStyle : BorderStyles;
+  dynamic var rightStyle  : BorderStyles;
   
   dynamic var box : Box;
   
@@ -129,10 +129,10 @@ class Border {
     
     this.box = box;
     
-    this.topStyle    = BorderStyle.SOLID;
-    this.leftStyle   = BorderStyle.SOLID;
-    this.bottomStyle = BorderStyle.SOLID;
-    this.rightStyle  = BorderStyle.SOLID;
+    this.topStyle    = BorderStyles.SOLID;
+    this.leftStyle   = BorderStyles.SOLID;
+    this.bottomStyle = BorderStyles.SOLID;
+    this.rightStyle  = BorderStyles.SOLID;
   }
 }
 
