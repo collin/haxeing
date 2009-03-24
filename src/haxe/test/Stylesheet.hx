@@ -1,5 +1,6 @@
 import haxe.Resource;
 import Document;
+import Box;
 
 class Selector {
   private static var ID      = ~/^#([A-Za-z\-_0-9]+)/;
@@ -11,6 +12,10 @@ class Selector {
   
   public function new() {
     this.chain = [];
+  }
+  
+  public function inspect() {
+    trace(this.chain);
   }
   
   public function idSelector(match) {
@@ -117,7 +122,7 @@ class ElementSelector implements SelectorPart {
     var matched = [];
     for(element in document.childNodes) {
       if(this.matchNode(element)) matched.push(element);
-      matched.concat(this.matchDocument(element));
+      matched = matched.concat(this.matchDocument(element));
     }
     return matched;
   }  
@@ -149,39 +154,41 @@ class Value {
   static var PERCENT = ~/([\d]+)%/;
   static var PIXELS  = ~/([\d]+)px/;
   static var COLOR   = ~/#([\d]{6})/;
-  static var FOURSIDES = ~/([\d])px ([\d])px ([\d])px ([\d])px/
+  static var FOURSIDES = ~/([\d])px ([\d])px ([\d])px ([\d])px/;
 
   dynamic public var pixels  : Float;
   dynamic public var percent : Float;
   
-  dynamic public var position : Position;
-  dynamic public var display  : Display;  
+  dynamic public var position : Dynamic;
+  dynamic public var display  : Dynamic;  
   
   dynamic public var topWidth    : Float;
   dynamic public var rightWidth  : Float;
   dynamic public var bottomWidth : Float;
   dynamic public var leftWidth   : Float;
   
-  dynamic public var topColor    : Integer;
-  dynamic public var rightColor  : Integer;
-  dynamic public var bottomColor : Integer;
-  dynamic public var leftColor   : Integer;
+  dynamic public var topColor    : Int;
+  dynamic public var rightColor  : Int;
+  dynamic public var bottomColor : Int;
+  dynamic public var leftColor   : Int;
   
-  dynamic public var color : Integer;
+  dynamic public var color : Int;
   
   dynamic public var top    : Float;
   dynamic public var right  : Float;
   dynamic public var bottom : Float;
   dynamic public var left   : Float;
     
+  public function new() {}
+    
   public static function parseMeasure(measure:String) {
     var value = new Value();
     
     if(Value.PERCENT.match(measure)) 
-      value.percent = parseFloat(Value.PERCENT.matched(1));
+      value.percent = Std.parseFloat(Value.PERCENT.matched(1));
       
     if(Value.PIXELS.match(measure))  
-      value.pixels = Value.PIXELS.matched(1);
+      value.pixels = Std.parseFloat(Value.PIXELS.matched(1));
       
     return value;
   }
@@ -189,24 +196,24 @@ class Value {
   public static function parseColor(color:String) {
     var value = new Value();
     if(Value.COLOR.match(color)) 
-      value.color = parseInt(Value.COLOR.matched(1));
+      value.color = Std.parseInt(Value.COLOR.matched(1));
     return value;
   }
   
   public static function parseFourSides(sides:String) {
     var value = new Value();
     if(Value.FOURSIDES.match(sides)) {
-      value.top    = Value.FOURSIDES.matched(1);
-      value.right  = Value.FOURSIDES.matched(2);
-      value.bottom = Value.FOURSIDES.matched(3);
-      value.left   = Value.FOURSIDES.matched(4);
+      value.top    = Std.parseFloat(Value.FOURSIDES.matched(1));
+      value.right  = Std.parseFloat(Value.FOURSIDES.matched(2));
+      value.bottom = Std.parseFloat(Value.FOURSIDES.matched(3));
+      value.left   = Std.parseFloat(Value.FOURSIDES.matched(4));
     }
     return value;
   }
   
   public static function parsePosition(position:String) {
     var value = new Value();
-    switch(value) {
+    switch(position) {
       case "static":   value.position = Position.STATIC;
       case "fixed":    value.position = Position.FIXED;
       case "relative": value.position = Position.RELATIVE;
@@ -217,7 +224,7 @@ class Value {
   
   public static function parseDisplay(display:String) {
     var value = new Value();
-    switch(value) {
+    switch(display) {
       case "none":   value.position = Display.NONE;
       case "block":  value.position = Display.BLOCK;
       case "inline": value.position = Display.INLINE;
@@ -225,42 +232,48 @@ class Value {
     return value;
   }
   
-  public static function parseUrl(url:String) {
+  public static function parseBorderStyle(borderStyle:String) {
     var value = new Value();
     return value;
+  }
+  
+  public static function parseUrl(url:String) {
+    var value = new Value();
+    return value; 
   }
 }
 
 class Style {
   public var value    : Value;
 
-  public function create(property:String, value:String) {
-    this.property = Style.trim(property);
-    value    = Style.trim(value);
+  public function new() {}
+
+  public static function create(property:String, value:String) {
+    value = Style.trim(value);
+    var style : Dynamic;
     
-    var klass;
-    
-    switch(this.property) {
-      case "width":             klass = WidthStyle;
-      case "height":            klass = HeightStyle;
-      case "border":            klass = BorderStyle;
-      case "margin":            klass = MarginStyle;
-      case "padding":           klass = PaddingStyle;
-      case "background-color":  klass = BackgroundColorStyle;
-      case "background-image":  klass = BackgroundImageStyle;
-      case "position":          klass = PositionStyle;
-      case "display":           klass = DisplayStyle;
-      case "top":               klass = TopStyle;
-      case "right":             klass = RightStyle;
-      case "bottom":            klass = BottomStyle;
-      case "left":              klass = LeftStyle;
+    switch(Style.trim(property)) {
+      case "width":             style = new WidthStyle(value);
+      case "height":            style = new HeightStyle(value);
+      case "border":            style = new BorderStyle(value);
+      case "margin":            style = new MarginStyle(value);
+      case "padding":           style = new PaddingStyle(value);
+      case "background-color":  style = new BackgroundColorStyle(value);
+      case "background-image":  style = new BackgroundImageStyle(value);
+      case "position":          style = new PositionStyle(value);
+      case "display":           style = new DisplayStyle(value);
+      case "top":               style = new TopStyle(value);
+      case "right":             style = new RightStyle(value);
+      case "bottom":            style = new BottomStyle(value);
+      case "left":              style = new LeftStyle(value);
+      default:                  style = new Style();
     }
     
-    return new klass(value);
+    return style;
   }
 
   public function inspect() {
-    trace("["+this.property+"|"+this.value+"]");
+    trace("["+Std.string(type(this))+"|"+this.value+"]");
   }
 
   public static function trim(string) {
@@ -272,90 +285,97 @@ class Style {
 
 class WidthStyle extends Style {
   public function new(width:String) {
+    super();
     this.value = Value.parseMeasure(width);
   }
   
-  public function applyStyle(node:AbstractNode) {
-    if(this.value.percent)
-      node.width = this.value.percent * node.parentNode.width;
+  public function applyStyle(box:Box) {
+    if(Std.is(this.value.percent, Float))
+      box.dimensions.setWidth(this.value.percent);
     else
-      node.width = this.value.pixels;    
+      box.dimensions.setWidth(this.value.pixels);    
   }
 }
 
 class HeightStyle extends Style {
   public function new(height:String) {
+    super();
     this.value = Value.parseMeasure(height);
   }
   
   public function applyStyle(box:Box) {
-    if(this.value.percent)
-      box.height = this.value.percent * box.parentNode.height;
+    if(Std.is(this.value.percent, Float))
+      box.dimensions.setHeight(this.value.percent);
     else
-      box.height = this.value.pixels;    
+      box.dimensions.setHeight(this.value.pixels);    
   }
 }
 
 class BorderStyle extends Style {
   public function new(border:String) {
+    super();
     this.value = Value.parseBorderStyle(border);
   }
   
   public function applyStyle(box:Box) {
     var bbw = box.border.width;
-    bbw.top    = this.value.topWidth;
-    bbw.right  = this.value.rightWidth;
-    bbw.bottom = this.value.bottomWidth;
-    bbw.left   = this.value.leftWidth;
+    bbw.setTop(    this.value.topWidth);
+    bbw.setRight(  this.value.rightWidth);
+    bbw.setBottom( this.value.bottomWidth);
+    bbw.setLeft(   this.value.leftWidth);
     
     var bbc = box.border.color;
-    bbc.top    = this.value.topColor;
-    bbc.right  = this.value.rightColor;
-    bbc.bottom = this.value.bottomWidth;
-    bbc.left   = this.value.leftWidth;
+    bbc.setTop(    this.value.topColor);
+    bbc.setRight(  this.value.rightColor);
+    bbc.setBottom( this.value.bottomWidth);
+    bbc.setLeft(   this.value.leftWidth);
   }
 }
 
 class MarginStyle extends Style {
   public function new(margin:String) {
+    super();
     this.value = Value.parseFourSides(margin);
   }
   
   public function applyStyle(box:Box) {
     var bm = box.margin;
-    bm.top    = this.value.top;
-    bm.right  = this.value.right;
-    bm.bottom = this.value.bottom;
-    bm.left   = this.value.left;
+    bm.setTop(    this.value.top);
+    bm.setRight(  this.value.right);
+    bm.setBottom( this.value.bottom);
+    bm.setLeft(   this.value.left);
   }
 }
 
 class PaddingStyle extends Style {
   public function new(padding:String) {
-    this.value = Value.parseFourSides(margin);
+    super();
+    this.value = Value.parseFourSides(padding);
   }
   
   public function applyStyle(box:Box) {
     var bm = box.margin;
-    bm.top    = this.value.top;
-    bm.right  = this.value.right;
-    bm.bottom = this.value.bottom;
-    bm.left   = this.value.left;
+    bm.setTop(    this.value.top);
+    bm.setRight(  this.value.right);
+    bm.setBottom( this.value.bottom);
+    bm.setLeft(   this.value.left);
   }
 }
 
 class BackgroundColorStyle extends Style {
   public function new(color:String) {
+    super();
     this.value = Value.parseColor(color);
   }
   
   public function applyStyle(box:Box) {
-    box.opaqueBackground = this.value.color;
+    box.backgroundColor = this.value.color;
   }
 }
 
 class BackgroundImageStyle extends Style {
   public function new(image:String) {
+    super();
     this.value = Value.parseUrl(image);
   }
   
@@ -366,6 +386,7 @@ class BackgroundImageStyle extends Style {
 
 class PositionStyle extends Style {
   public function new(position:String) {
+    super();
     this.value = Value.parsePosition(position);  
   }
   
@@ -376,7 +397,8 @@ class PositionStyle extends Style {
 
 class DisplayStyle extends Style {
   public function new(display:String) {
-    this.value = value.parseDisplay(display);
+    super();
+    this.value = Value.parseDisplay(display);
   }
   
   public function applyStyle(box:Box) {
@@ -386,41 +408,45 @@ class DisplayStyle extends Style {
 
 class TopStyle extends Style {
   public function new(top:String) {
+    super();
     this.value = Value.parseMeasure(top);
   }
   
   public function applyStyle(box:Box) {
-    box.offset.top = this.value.pixels;
+    box.offset.setTop(this.value.pixels);
   }
 }
 
 class RightStyle extends Style {
   public function new(right:String) {
+    super();
     this.value = Value.parseMeasure(right);
   }
   
   public function applyStyle(box:Box) {
-    box.offset.right = value.pixels;
+    box.offset.setRight(value.pixels);
   }
 }
 
 class BottomStyle extends Style {
   public function new(bottom:String) {
+    super();
     this.value = Value.parseMeasure(bottom);
   }
   
   public function applyStyle(box:Box) {
-    box.offset.bottom = value.pixels;
+    box.offset.setBottom(value.pixels);
   }
 }
 
 class LeftStyle extends Style {
   public function new(left:String) {
+    super();
     this.value = Value.parseMeasure(left);
   }
   
   public function applyStyle(box:Box) {
-    box.offset.left = value.pixels;
+    box.offset.setLeft(value.pixels);
   }
 }
 
@@ -482,7 +508,7 @@ class Parser {
 
             if(!(~/^[ ]+$/).match(rule)) {
               keyValue = PROPERTY.split(rule);
-              styles.push(new Style(keyValue[0], keyValue[1]));
+              styles.push(Style.create(keyValue[0], keyValue[1]));
             }
           }
         }

@@ -19,14 +19,14 @@ module HaxeHelper
   end
   
   def compile name
+    Kernel.puts
+    Kernel.puts
     system "cd src/haxe/#{name} && haml document.haml > document.xml"
     system "cd src/haxe/#{name} && sass stylesheet.sass > stylesheet.css"
     system "cd src/haxe/#{name} && haxe compile.hxml"
     FileUtils.mv "src/haxe/#{name}/#{name}.swf", "site/swfs"
     FileUtils.rm "src/haxe/#{name}/document.xml"
     FileUtils.rm "src/haxe/#{name}/stylesheet.css"
-    Kernel.puts
-    Kernel.puts
   end
   
   def hash_to_attrs hash

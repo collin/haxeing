@@ -14,10 +14,10 @@ enum Position {
 }
 
 class FourSides {
-  dynamic var top    : Float;
-  dynamic var left   : Float;
-  dynamic var bottom : Float;
-  dynamic var right  : Float;
+  public dynamic var top    : Float;
+  public dynamic var left   : Float;
+  public dynamic var bottom : Float;
+  public dynamic var right  : Float;
 
   dynamic var box    : Box;
 
@@ -28,13 +28,7 @@ class FourSides {
     this.right  = 0;
     this.box    = box;
   }
-}
 
-class Offset extends FourSides {
-  public function new(box) {
-    super(box);
-  }
-  
   public function setTop(value:Float)    {
     this.top = value;
     return value;
@@ -53,6 +47,12 @@ class Offset extends FourSides {
   public function setRight(value:Float)  {
     this.right = value;
     return value;
+  }
+}
+
+class Offset extends FourSides {
+  public function new(box) {
+    super(box);
   }
 }
 
@@ -60,51 +60,11 @@ class Margin extends FourSides {
   public function new(box) {
     super(box);
   }
-  
-  public function setTop(value:Float)    {
-    this.top = value;
-    return value;
-  }
-  
-  public function setLeft(value:Float)   {
-    this.left = value;
-    return value;
-  }
-  
-  public function setBottom(value:Float) {
-    this.bottom = value;
-    return value;
-  }
-  
-  public function setRight(value:Float)  {
-    this.right = value;
-    return value;
-  }
 }
 
 class Padding extends FourSides {
   public function new(box) {
     super(box);
-  }
-  
-  public function setTop(value:Float)    {
-    this.top = value;
-    return value;
-  }
-  
-  public function setLeft(value:Float)   {
-    this.left = value;
-    return value;
-  }
-  
-  public function setBottom(value:Float) {
-    this.bottom = value;
-    return value;
-  }
-  
-  public function setRight(value:Float)  {
-    this.right = value;
-    return value;
   }
 }
 
@@ -113,8 +73,8 @@ enum BorderStyles {
 }
 
 class Border {
-  dynamic var width : FourSides;
-  dynamic var color : FourSides;
+  public dynamic var width : FourSides;
+  public dynamic var color : FourSides;
   
   dynamic var topStyle    : BorderStyles;
   dynamic var leftStyle   : BorderStyles;
@@ -136,14 +96,38 @@ class Border {
   }
 }
 
-class Box extends Sprite {
-  dynamic var display  : Display;
-  dynamic var position : Position;
+class Dimensions {
+  private dynamic var width  : Float;
+  private dynamic var height : Float;
   
-  dynamic var offset  : FourSides;
-  dynamic var margin  : FourSides;
-  dynamic var padding : FourSides;  
-  dynamic var border  : Border;
+  private var box : Box;
+  
+  public function new(box) {
+    this.box = box;
+  }
+  
+  public function setWidth(size) {
+    this.width = size;
+    return size; 
+  }
+  
+  public function setHeight(size) {
+    this.height = size;
+    return size; 
+  }
+}
+
+class Box extends Sprite {
+  public dynamic var display  : Display;
+  public dynamic var position : Position;
+  
+  public dynamic var offset  : FourSides;
+  public dynamic var margin  : FourSides;
+  public dynamic var padding : FourSides;  
+  public dynamic var border  : Border;
+
+  public dynamic var dimensions : Dimensions;
+  public dynamic var backgroundColor : Int;
 
   public function new() {
     super();
@@ -155,8 +139,7 @@ class Box extends Sprite {
     this.margin  = new Margin(this);
     this.padding = new Padding(this);
     this.border  = new Border(this);
-    
-    this.width  = 0;
-    this.height = 0;  
+ 
+    this.dimensions = new Dimensions(this);
   } 
 }

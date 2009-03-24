@@ -12,7 +12,6 @@ class AbstractNode {
   
   dynamic public var styles : List<Style>;
   
-  
   public function append(node:Node) {
     node.remove();
     node.parentNode = this;
@@ -53,7 +52,7 @@ class Document extends AbstractNode {
     super();
     this.stylesheet = new Stylesheet();
     this.box = box;
-    this.tagName = "";
+    this.tagName = "document";
   }
   
   public static function fromResource(box, resourceName) {
@@ -87,7 +86,7 @@ class Node extends AbstractNode {
     super();
     this.document = document;
     this.box = new Box();
-    this.tagName = "";
+    this.tagName = tagName;
   }
 
   public function remove() {

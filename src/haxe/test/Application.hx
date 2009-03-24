@@ -5,6 +5,7 @@ import flash.display.Shape;
 import flash.events.MouseEvent;
 import FlashQuery;
 import Document;
+import Stylesheet;
 import haxe.Resource;
 
 class Application {
@@ -12,18 +13,20 @@ class Application {
     return new FlashQuery(query);
   }
 
-
   static function main() {    
     var doc = Document.fromResource(flash.Lib.current, "document.xml");
     trace("\n"+Resource.getString("stylesheet.css"));
     doc.stylesheet.parseResource("stylesheet.css");
-    trace('loaded stylsheet');
-    trace(doc.stylesheet.rules);
+/*    var s = Selector.create('button');*/
+/*    trace(s.matchDocument(doc).length);    */
+/*    trace('loaded stylsheet');*/
+/*    trace(doc.stylesheet.rules);*/
+    trace(doc.stylesheet.rules.length);
     for(rule in doc.stylesheet.rules) {
-      trace(rule.selector);
-      for(style in rule.styles) {
-        style.inspect();
-      }
+/*      trace(rule.selector.matchDocument(doc));*/
+/*      for(style in rule.styles) {*/
+/*        style.inspect();*/
+/*      }*/
     }
     
 /*    var g = flash.Lib.current.getChildAt(1).graphics;*/
